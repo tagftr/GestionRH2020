@@ -1,0 +1,12 @@
+>ng new angular-tour-of-heroes           //create new workspace    
+>ng new angular-tour-of-heroes  --routing          //create new workspace with routing 
+>cd angular-tour-of-heroes
+>ng serve --open
+
+>ng g c myComponent --spec=false -s      //create new component without spec file(for tests) and without separate style file
+                    -it  -is             //for inline template and inline style
+>ng g s myService  --spec=false          //create new service
+>ng g cl myClass --type=model            //create new class model
+
+1) npm install --save bootstrap@latest
+Then open angular.json and under "styles" section add "node_modules/bootstrap/dist/css/bootstrap.min.css"

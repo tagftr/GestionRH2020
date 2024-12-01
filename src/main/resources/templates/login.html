@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Gestion des resources humaines</title>
+    <!-- App css -->
+    <link th:href="@{css/bootstrap.min.css}"  rel="stylesheet" type="text/css">
+    <link th:href="@{css/icons.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{css/metisMenu.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{css/style.css}" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="account-body accountbg">
+<!-- Log In page -->
+<div class="row vh-100">
+    <div class="col-lg-12 pr-0 align-self-center">
+        <div class="row">
+            <div class="col-lg-3 mx-auto">
+                <div class="card auth-card shadow-lg">
+                    <div class="card-body">
+                        <div class="px-3">
+                            <div class="auth-logo-box">
+                                <a href="#" class="logo logo-admin">
+                                    <img th:src="@{images/logo.png}" height="55" alt="logo" class="auth-logo"></a>
+                            </div>
+                            <!--end auth-logo-box-->
+                            <div class="text-center auth-logo-text">
+                                <h4 class="mt-0 mb-3 mt-5">Gestion des resources humaines</h4>
+                                <p class="text-muted mb-0">Connectez vous pour pouvoir continuer</p>
+                            </div>
+
+                            <!--end auth-logo-text-->
+                            <form class="form-horizontal auth-form my-4" method="POST" th:action="@{/login}">
+                                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                                    <label for="email">Email</label>
+
+                                    <div class="input-group mb-3"><span class="auth-form-icon"><i class="dripicons-user"></i> </span>
+                                        <input type="text" class="form-control" id="email" name="email"  required autofocus>
+                                    </div>
+                                </div>
+                                <!--end form-group-->
+                                <div class="form-group">
+                                    <label for="password">Mot de passe</label>
+                                    <div class="input-group mb-3"><span class="auth-form-icon"><i class="dripicons-lock"></i> </span>
+                                        <input type="password" id="password"  class="form-control" name="password" required placeholder="Entrer le mot de passe">
+                                    </div>
+                                </div>
+                                <!--end form-group-->
+                                <div class="form-group row mt-4">
+                                    <div class="col-sm-6">
+                                        <div class="custom-control custom-switch switch-success">
+                                            <input type="checkbox" class="custom-control-input" id="customSwitchSuccess">
+                                            <label class="custom-control-label text-muted" for="customSwitchSuccess">Se souvenir de moi</label>
+                                        </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-sm-6 text-right"><a href="auth-recover-pw.html" class="text-muted font-13"><i class="dripicons-lock"></i> Mot d passe oublié ?</a></div>
+                                    <!--end col-->
+                                </div>
+                                <!--end form-group-->
+                                <div class="form-group mb-0 row">
+                                    <div class="col-12 mt-2">
+                                        <button class="btn btn-primary btn-round btn-block waves-effect waves-light" type="submit">Se connecter <i class="fas fa-sign-in-alt ml-1"></i></button>
+                                    </div>
+                                    <!--end col-->
+                                </div>
+                                <!--end form-group-->
+                            </form>
+                            <!--end form-->
+                        </div>
+                    </div>
+                    <!--end card-body-->
+                </div>
+                <!--end card-->
+                <div class="account-social text-center mt-4">
+                    <h6 class="my-4">Or Login With</h6>
+                    <ul class="list-inline mb-4">
+                        <li class="list-inline-item"><a href="" class=""><i class="fab fa-facebook-f facebook"></i></a></li>
+                        <li class="list-inline-item"><a href="" class=""><i class="fab fa-twitter twitter"></i></a></li>
+                        <li class="list-inline-item"><a href="" class=""><i class="fab fa-google google"></i></a></li>
+                    </ul>
+                </div>
+                <!--end account-social-->
+            </div>
+            <!--end col-->
+        </div>
+        <!--end row-->
+    </div>
+    <!--end col-->
+</div>
+<!--end row-->
+<!-- End Log In page -->
+<!-- jQuery  -->
+<script th:src="@{js/jquery.min.js}"></script>
+<script th:src="@{js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{js/metisMenu.min.js}"></script>
+<script th:src="@{js/waves.min.js}"></script>
+<script th:src="@{js/jquery.slimscroll.min.js}"></script>
+<!-- App js -->
+<script th:src="@{assets/js/app.js}"></script>
+</body>
+
+</html>

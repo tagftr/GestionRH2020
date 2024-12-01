@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{chefprojet/layout}">
+<head>
+    <title>List des projets</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <div class="float-right">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">Chef projet</a></li>
+                        <li class="breadcrumb-item active">List projets</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Liste des projets</h4></div>
+            <!--end page-title-box-->
+        </div>
+        <!--end col-->
+    </div>
+    <!-- end page title end breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                        <div class="row">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dt-responsive nowrap dataTable no-footer" style="border-collapse: collapse; border-spacing: 0; width: 100%;" role="grid" aria-describedby="datatable_info">
+                                <thead>
+                                <tr role="row">
+                                    <th >#</th>
+                                    <th >Nom </th>
+                                    <th >Description</th>
+                                    <th> Affecter</th>
+                                    <th> Employes</th>
+                                </tr>
+                                </thead>
+                                <tbody id="stagairesTable" >
+                                <tr role="row" class="odd" th:each="projet: ${projets}">
+                                    <td th:text="${projet.getId()}" />
+                                    <td th:text="${projet.getName()}" />
+                                    <td th:text="${projet.getDescription()}" />
+                                    <td><button th:value="${projet.getId()}" th:name="${projet.getName()}" class="btn btn-primary view_data" data-toggle="modal">Affecter</button>  </td>
+                                    <td><a th:href="@{'/chefprojet/projetemployes/' + ${projet.getId()} }" class="btn btn-secondary">Employes</a>  </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <!-- Modal -->
+                            <div id="myModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Affecter le projet <span id="libelle"></span> </h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="post" th:object="${affectation}"  th:action="@{'/chefprojet/affecter'}" >
+                                            <input type="hidden" th:field="*{projet_id}" id="projet_id"
+                                                   class="form-control"/>
+                                            <select th:field="*{user_id}"  class="form-control" id="user_id" required>
+                                            </select>
+                                            <input type="submit" class="btn btn-secondary" value="Affecter">
+                                            </form>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+</div>
+
+
+<th:block layout:fragment="script">
+    <script>
+        $(document).ready(function(){
+            $(document).ready(function(){
+                $(document).on("click", ".view_data" , function() {
+                    var projet_id = $(this).val();
+                    var libelle = $(this).attr('name');
+                    $('#projet_id').val(projet_id);
+                    $('#libelle').html(libelle);
+
+                    $.ajax({
+                        type : 'get',
+                        url : '/employetoassign/' + projet_id,
+                        data: {
+                            id:projet_id
+                        },
+                        success : function(data){
+                            console.log(data);
+                            $('#user_id').html(data);
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                    $('#myModal').modal("show");
+                });
+            });
+
+
+        });
+    </script>
+</th:block>
+
+</body>
+
+
+</html>

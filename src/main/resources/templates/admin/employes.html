@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout}">
+<head>
+    <title>List des employes</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+        <!-- Page-Title -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="page-title-box">
+                    <div class="float-right">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0);">Admin</a></li>
+                            <li class="breadcrumb-item active">List Employes</li>
+                        </ol>
+                    </div>
+                    <h4 class="page-title">Liste des employés</h4></div>
+                <!--end page-title-box-->
+            </div>
+            <!--end col-->
+        </div>
+        <!-- end page title end breadcrumb -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="row">
+
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table table-bordered dt-responsive nowrap dataTable no-footer" style="border-collapse: collapse; border-spacing: 0; width: 100%;" role="grid" aria-describedby="datatable_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th >#</th>
+                                        <th >Prenom </th>
+                                        <th >Nom</th>
+                                        <th >Email</th>
+                                        <th  >Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="stagairesTable" >
+                                    <tr role="row" class="odd" th:each="user: ${users}">
+                                        <td th:text="${user.getId()}" />
+                                        <td th:text="${user.getName()}" />
+                                        <td th:text="${user.getLastName()}" />
+                                        <td th:text="${user.getEmail()}" />
+                                        <td>
+                                            <a th:href="@{'/admin/employes/modifier/' + ${user.getId()}}"><i class="far fa-edit text-info mr-1"></i></a>
+                                            <a th:href="@{'/admin/employes/supprimer/' + ${user.getId()}}" ><i class="far fa-trash-alt text-danger"></i></a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-7">
+                                <div class="dataTables_paginate paging_simple_numbers" id="datatable_paginate">
+                                    <ul class="pagination">
+                                        <li class="paginate_button page-item previous disabled" id="datatable_previous"><a href="#" aria-controls="datatable" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
+                                        <li class="paginate_button page-item active"><a href="#" aria-controls="datatable" data-dt-idx="1" tabindex="0" class="page-link">1</a></li>
+                                        <li class="paginate_button page-item "><a href="#" aria-controls="datatable" data-dt-idx="2" tabindex="0" class="page-link">2</a></li>
+                                        <li class="paginate_button page-item next" id="datatable_next"><a href="#" aria-controls="datatable" data-dt-idx="3" tabindex="0" class="page-link">Next</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+</div>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{employe/layout}">
+<head>
+    <title>List des conges</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <div class="float-right">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">Employe</a></li>
+                        <li class="breadcrumb-item active">List des conges</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Liste des congés</h4></div>
+            <!--end page-title-box-->
+        </div>
+        <!--end col-->
+    </div>
+    <!-- end page title end breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="datatable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                        <div class="row">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dt-responsive nowrap dataTable no-footer" style="border-collapse: collapse; border-spacing: 0; width: 100%;" role="grid" aria-describedby="datatable_info">
+                                <thead>
+                                <tr role="row">
+                                    <th >#</th>
+                                    <th >Date debut </th>
+                                    <th >Date fin</th>
+                                    <th >Durée</th>
+                                    <th >Type</th>
+                                    <th >State</th>
+                                </tr>
+                                </thead>
+                                <tbody id="stagairesTable" >
+                                <tr role="row" class="odd" th:each="conge: ${conges}">
+                                    <td th:text="${conge.getId()}" />
+                                    <td th:text="${conge.getDate_debut()}" />
+                                    <td th:text="${conge.getDate_fin()}" />
+                                    <td th:text="${conge.getDiff()}" />
+                                    <td th:text="${names[conge.getType()]}" />
+                                    <td th:switch="${conge.getState()}">
+                                        <span th:case="'0'">En Attente</span>
+                                        <span th:case="'1'"> Confirmé </span>
+                                        <span th:case="*"> Rejeté </span>
+                                    </td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+</div>
+
+</body>
+</html>

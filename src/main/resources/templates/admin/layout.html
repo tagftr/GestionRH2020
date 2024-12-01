@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE"></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta content="A premium admin dashboard template by Mannatthemes" name="description">
+    <meta content="Mannatthemes" name="author">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="https://mannatthemes.com/metrica/light/assets/images/favicon.ico">
+    <link rel="stylesheet" th:href="@{/plugins/morris/morris.css}">
+    <!-- App css -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/icons.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/metisMenu.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css">
+    <style type="text/css">
+        .apexcharts-canvas {
+            position: relative;
+            user-select: none;
+            /* cannot give overflow: hidden as it will crop tooltips which overflow outside chart area */
+        }
+        /* scrollbar is not visible by default for legend, hence forcing the visibility */
+
+        .apexcharts-canvas::-webkit-scrollbar {
+            -webkit-appearance: none;
+            width: 6px;
+        }
+
+        .apexcharts-canvas::-webkit-scrollbar-thumb {
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, .5);
+            box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+            -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+        }
+
+        .apexcharts-canvas.dark {
+            background: #343F57;
+        }
+
+        .apexcharts-inner {
+            position: relative;
+        }
+
+        .legend-mouseover-inactive {
+            transition: 0.15s ease all;
+            opacity: 0.20;
+        }
+
+        .apexcharts-series-collapsed {
+            opacity: 0;
+        }
+
+        .apexcharts-gridline,
+        .apexcharts-text {
+            pointer-events: none;
+        }
+
+        .apexcharts-tooltip {
+            border-radius: 5px;
+            box-shadow: 2px 2px 6px -4px #999;
+            cursor: default;
+            font-size: 14px;
+            left: 62px;
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            top: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 12;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-tooltip.light {
+            border: 1px solid #e3e3e3;
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        .apexcharts-tooltip.dark {
+            color: #fff;
+            background: rgba(30, 30, 30, 0.8);
+        }
+
+        .apexcharts-tooltip * {
+            font-family: inherit;
+        }
+
+        .apexcharts-tooltip .apexcharts-marker,
+        .apexcharts-area-series .apexcharts-area,
+        .apexcharts-line {
+            pointer-events: none;
+        }
+
+        .apexcharts-tooltip.active {
+            opacity: 1;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-tooltip-title {
+            padding: 6px;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .apexcharts-tooltip.light .apexcharts-tooltip-title {
+            background: #ECEFF1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .apexcharts-tooltip.dark .apexcharts-tooltip-title {
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid #333;
+        }
+
+        .apexcharts-tooltip-text-value,
+        .apexcharts-tooltip-text-z-value {
+            display: inline-block;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .apexcharts-tooltip-text-z-label:empty,
+        .apexcharts-tooltip-text-z-value:empty {
+            display: none;
+        }
+
+        .apexcharts-tooltip-text-value,
+        .apexcharts-tooltip-text-z-value {
+            font-weight: 600;
+        }
+
+        .apexcharts-tooltip-marker {
+            width: 12px;
+            height: 12px;
+            position: relative;
+            top: 0px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+
+        .apexcharts-tooltip-series-group {
+            padding: 0 10px;
+            display: none;
+            text-align: left;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .apexcharts-tooltip-series-group.active .apexcharts-tooltip-marker {
+            opacity: 1;
+        }
+
+        .apexcharts-tooltip-series-group.active,
+        .apexcharts-tooltip-series-group:last-child {
+            padding-bottom: 4px;
+        }
+
+        .apexcharts-tooltip-y-group {
+            padding: 6px 0 5px;
+        }
+
+        .apexcharts-tooltip-candlestick {
+            padding: 4px 8px;
+        }
+
+        .apexcharts-tooltip-candlestick > div {
+            margin: 4px 0;
+        }
+
+        .apexcharts-tooltip-candlestick span.value {
+            font-weight: bold;
+        }
+
+        .apexcharts-tooltip-rangebar {
+            padding: 5px 8px;
+        }
+
+        .apexcharts-tooltip-rangebar .category {
+            font-weight: 600;
+            color: #777;
+        }
+
+        .apexcharts-tooltip-rangebar .series-name {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .apexcharts-xaxistooltip {
+            opacity: 0;
+            padding: 9px 10px;
+            pointer-events: none;
+            color: #373d3f;
+            font-size: 13px;
+            text-align: center;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+            background: #ECEFF1;
+            border: 1px solid #90A4AE;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-xaxistooltip.dark {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .apexcharts-xaxistooltip:after,
+        .apexcharts-xaxistooltip:before {
+            left: 50%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .apexcharts-xaxistooltip:after {
+            border-color: rgba(236, 239, 241, 0);
+            border-width: 6px;
+            margin-left: -6px;
+        }
+
+        .apexcharts-xaxistooltip:before {
+            border-color: rgba(144, 164, 174, 0);
+            border-width: 7px;
+            margin-left: -7px;
+        }
+
+        .apexcharts-xaxistooltip-bottom:after,
+        .apexcharts-xaxistooltip-bottom:before {
+            bottom: 100%;
+        }
+
+        .apexcharts-xaxistooltip-top:after,
+        .apexcharts-xaxistooltip-top:before {
+            top: 100%;
+        }
+
+        .apexcharts-xaxistooltip-bottom:after {
+            border-bottom-color: #ECEFF1;
+        }
+
+        .apexcharts-xaxistooltip-bottom:before {
+            border-bottom-color: #90A4AE;
+        }
+
+        .apexcharts-xaxistooltip-bottom.dark:after {
+            border-bottom-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-xaxistooltip-bottom.dark:before {
+            border-bottom-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-xaxistooltip-top:after {
+            border-top-color: #ECEFF1
+        }
+
+        .apexcharts-xaxistooltip-top:before {
+            border-top-color: #90A4AE;
+        }
+
+        .apexcharts-xaxistooltip-top.dark:after {
+            border-top-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-xaxistooltip-top.dark:before {
+            border-top-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-xaxistooltip.active {
+            opacity: 1;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-yaxistooltip {
+            opacity: 0;
+            padding: 4px 10px;
+            pointer-events: none;
+            color: #373d3f;
+            font-size: 13px;
+            text-align: center;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+            background: #ECEFF1;
+            border: 1px solid #90A4AE;
+        }
+
+        .apexcharts-yaxistooltip.dark {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .apexcharts-yaxistooltip:after,
+        .apexcharts-yaxistooltip:before {
+            top: 50%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .apexcharts-yaxistooltip:after {
+            border-color: rgba(236, 239, 241, 0);
+            border-width: 6px;
+            margin-top: -6px;
+        }
+
+        .apexcharts-yaxistooltip:before {
+            border-color: rgba(144, 164, 174, 0);
+            border-width: 7px;
+            margin-top: -7px;
+        }
+
+        .apexcharts-yaxistooltip-left:after,
+        .apexcharts-yaxistooltip-left:before {
+            left: 100%;
+        }
+
+        .apexcharts-yaxistooltip-right:after,
+        .apexcharts-yaxistooltip-right:before {
+            right: 100%;
+        }
+
+        .apexcharts-yaxistooltip-left:after {
+            border-left-color: #ECEFF1;
+        }
+
+        .apexcharts-yaxistooltip-left:before {
+            border-left-color: #90A4AE;
+        }
+
+        .apexcharts-yaxistooltip-left.dark:after {
+            border-left-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-yaxistooltip-left.dark:before {
+            border-left-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-yaxistooltip-right:after {
+            border-right-color: #ECEFF1;
+        }
+
+        .apexcharts-yaxistooltip-right:before {
+            border-right-color: #90A4AE;
+        }
+
+        .apexcharts-yaxistooltip-right.dark:after {
+            border-right-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-yaxistooltip-right.dark:before {
+            border-right-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .apexcharts-yaxistooltip.active {
+            opacity: 1;
+        }
+
+        .apexcharts-xcrosshairs,
+        .apexcharts-ycrosshairs {
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-xcrosshairs.active,
+        .apexcharts-ycrosshairs.active {
+            opacity: 1;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-ycrosshairs-hidden {
+            opacity: 0;
+        }
+
+        .apexcharts-zoom-rect {
+            pointer-events: none;
+        }
+
+        .apexcharts-selection-rect {
+            cursor: move;
+        }
+
+        .svg_select_points,
+        .svg_select_points_rot {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .svg_select_points_l,
+        .svg_select_points_r {
+            cursor: ew-resize;
+            opacity: 1;
+            visibility: visible;
+            fill: #888;
+        }
+
+        .apexcharts-canvas.zoomable .hovering-zoom {
+            cursor: crosshair
+        }
+
+        .apexcharts-canvas.zoomable .hovering-pan {
+            cursor: move
+        }
+
+        .apexcharts-xaxis,
+        .apexcharts-yaxis {
+            pointer-events: none;
+        }
+
+        .apexcharts-zoom-icon,
+        .apexcharts-zoom-in-icon,
+        .apexcharts-zoom-out-icon,
+        .apexcharts-reset-zoom-icon,
+        .apexcharts-pan-icon,
+        .apexcharts-selection-icon,
+        .apexcharts-menu-icon,
+        .apexcharts-toolbar-custom-icon {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            line-height: 24px;
+            color: #6E8192;
+            text-align: center;
+        }
+
+        .apexcharts-zoom-icon svg,
+        .apexcharts-zoom-in-icon svg,
+        .apexcharts-zoom-out-icon svg,
+        .apexcharts-reset-zoom-icon svg,
+        .apexcharts-menu-icon svg {
+            fill: #6E8192;
+        }
+
+        .apexcharts-selection-icon svg {
+            fill: #444;
+            transform: scale(0.76)
+        }
+
+        .dark .apexcharts-zoom-icon svg,
+        .dark .apexcharts-zoom-in-icon svg,
+        .dark .apexcharts-zoom-out-icon svg,
+        .dark .apexcharts-reset-zoom-icon svg,
+        .dark .apexcharts-pan-icon svg,
+        .dark .apexcharts-selection-icon svg,
+        .dark .apexcharts-menu-icon svg,
+        .dark .apexcharts-toolbar-custom-icon svg {
+            fill: #f3f4f5;
+        }
+
+        .apexcharts-canvas .apexcharts-zoom-icon.selected svg,
+        .apexcharts-canvas .apexcharts-selection-icon.selected svg,
+        .apexcharts-canvas .apexcharts-reset-zoom-icon.selected svg {
+            fill: #008FFB;
+        }
+
+        .light .apexcharts-selection-icon:not(.selected):hover svg,
+        .light .apexcharts-zoom-icon:not(.selected):hover svg,
+        .light .apexcharts-zoom-in-icon:hover svg,
+        .light .apexcharts-zoom-out-icon:hover svg,
+        .light .apexcharts-reset-zoom-icon:hover svg,
+        .light .apexcharts-menu-icon:hover svg {
+            fill: #333;
+        }
+
+        .apexcharts-selection-icon,
+        .apexcharts-menu-icon {
+            position: relative;
+        }
+
+        .apexcharts-reset-zoom-icon {
+            margin-left: 5px;
+        }
+
+        .apexcharts-zoom-icon,
+        .apexcharts-reset-zoom-icon,
+        .apexcharts-menu-icon {
+            transform: scale(0.85);
+        }
+
+        .apexcharts-zoom-in-icon,
+        .apexcharts-zoom-out-icon {
+            transform: scale(0.7)
+        }
+
+        .apexcharts-zoom-out-icon {
+            margin-right: 3px;
+        }
+
+        .apexcharts-pan-icon {
+            transform: scale(0.62);
+            position: relative;
+            left: 1px;
+            top: 0px;
+        }
+
+        .apexcharts-pan-icon svg {
+            fill: #fff;
+            stroke: #6E8192;
+            stroke-width: 2;
+        }
+
+        .apexcharts-pan-icon.selected svg {
+            stroke: #008FFB;
+        }
+
+        .apexcharts-pan-icon:not(.selected):hover svg {
+            stroke: #333;
+        }
+
+        .apexcharts-toolbar {
+            position: absolute;
+            z-index: 11;
+            top: 0px;
+            right: 3px;
+            max-width: 176px;
+            text-align: right;
+            border-radius: 3px;
+            padding: 0px 6px 2px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .apexcharts-toolbar svg {
+            pointer-events: none;
+        }
+
+        .apexcharts-menu {
+            background: #fff;
+            position: absolute;
+            top: 100%;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 3px;
+            right: 10px;
+            opacity: 0;
+            min-width: 110px;
+            transition: 0.15s ease all;
+            pointer-events: none;
+        }
+
+        .apexcharts-menu.open {
+            opacity: 1;
+            pointer-events: all;
+            transition: 0.15s ease all;
+        }
+
+        .apexcharts-menu-item {
+            padding: 6px 7px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .light .apexcharts-menu-item:hover {
+            background: #eee;
+        }
+
+        .dark .apexcharts-menu {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+        }
+
+        @media screen and (min-width: 768px) {
+            .apexcharts-toolbar {
+                /*opacity: 0;*/
+            }
+            .apexcharts-canvas:hover .apexcharts-toolbar {
+                opacity: 1;
+            }
+        }
+
+        .apexcharts-datalabel.hidden {
+            opacity: 0;
+        }
+
+        .apexcharts-pie-label,
+        .apexcharts-datalabel,
+        .apexcharts-datalabel-label,
+        .apexcharts-datalabel-value {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .apexcharts-pie-label-delay {
+            opacity: 0;
+            animation-name: opaque;
+            animation-duration: 0.3s;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease;
+        }
+
+        .apexcharts-canvas .hidden {
+            opacity: 0;
+        }
+
+        .apexcharts-hide .apexcharts-series-points {
+            opacity: 0;
+        }
+
+        .apexcharts-area-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events,
+        .apexcharts-line-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events,
+        .apexcharts-radar-series path,
+        .apexcharts-radar-series polygon {
+            pointer-events: none;
+        }
+        /* markers */
+
+        .apexcharts-marker {
+            transition: 0.15s ease all;
+        }
+
+        @keyframes opaque {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+    <style type="text/css">
+        @keyframes resizeanim {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .resize-triggers {
+            animation: 1ms resizeanim;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .resize-triggers,
+        .resize-triggers > div,
+        .contract-trigger:before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .resize-triggers > div {
+            background: #eee;
+            overflow: auto;
+        }
+
+        .contract-trigger:before {
+            width: 200%;
+            height: 200%;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Top Bar Start -->
+<div class="topbar">
+    <!-- LOGO -->
+    <div class="topbar-left">
+        <a th:href="@{/admin}" class="logo">
+        <span><img th:src="@{/images/logo.png}" alt="logo-small" class="logo-md"> </span>
+        </a>
+    </div>
+    <!--end logo-->
+    <!-- Navbar -->
+    <nav class="navbar-custom">
+        <ul class="list-unstyled topbar-nav float-right mb-0">
+            <li class="dropdown">
+                <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                    <img th:src="@{/images/users/user.png}" alt="profile-user" class="rounded-circle"> <span class="ml-1 nav-user-name hidden-sm"> <span sec:authentication="name"></span> <i class="mdi mdi-chevron-down"></i></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+
+                    <a class="dropdown-item"  th:href="@{/logout}" ><i class="dripicons-exit text-muted mr-2"></i> Logout</a>
+                </div>
+            </li>
+        </ul>
+        <!--end topbar-nav-->
+        <ul class="list-unstyled topbar-nav mb-0">
+            <li>
+                <button class="button-menu-mobile nav-link waves-effect waves-light"><i class="dripicons-menu nav-icon"></i></button>
+            </li>
+            <li class="hide-phone app-search">
+                <h3>Espace administrateur</h3>
+            </li>
+        </ul>
+    </nav>
+    <!-- end navbar-->
+</div>
+<!-- Top Bar End -->
+<div class="page-wrapper">
+    <!-- Left Sidenav -->
+    <div class="left-sidenav">
+        <div class="main-icon-menu">
+            <nav class="nav">
+
+                <a href="#MetricaProject" class="nav-link" data-toggle="tooltip-custom" data-placement="top" title="" data-original-title="Employes">
+                    <svg class="nav-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path class="svg-primary"  d="M337.454 232c33.599 0 61.092-27.002 61.092-60 0-32.997-27.493-60-61.092-60s-61.09 27.003-61.09 60c0 32.998 27.491 60 61.09 60zm-162.908 0c33.599 0 61.09-27.002 61.09-60 0-32.997-27.491-60-61.09-60s-61.092 27.003-61.092 60c0 32.998 27.493 60 61.092 60zm0 44C126.688 276 32 298.998 32 346v54h288v-54c0-47.002-97.599-70-145.454-70zm162.908 11.003c-6.105 0-10.325 0-17.454.997 23.426 17.002 32 28 32 58v54h128v-54c0-47.002-94.688-58.997-142.546-58.997z"></path>
+                    </svg>
+                </a>
+                <!--end MetricaProject-->
+                <a href="#MetricaEcommerce" class="nav-link" data-toggle="tooltip-custom" data-placement="top" title="" data-original-title="Projets">
+                <svg class="nav-svg" version="1.1" id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                        <path class="svg-primary" d="M256 176c-44.004 0-80.001 36-80.001 80 0 44.004 35.997 80 80.001 80 44.005 0 79.999-35.996 79.999-80 0-44-35.994-80-79.999-80zm190.938 58.667c-9.605-88.531-81.074-160-169.605-169.599V32h-42.666v33.067c-88.531 9.599-160 81.068-169.604 169.599H32v42.667h33.062c9.604 88.531 81.072 160 169.604 169.604V480h42.666v-33.062c88.531-9.604 160-81.073 169.605-169.604H480v-42.667h-33.062zM256 405.333c-82.137 0-149.334-67.198-149.334-149.333 0-82.136 67.197-149.333 149.334-149.333 82.135 0 149.332 67.198 149.332 149.333S338.135 405.333 256 405.333z"></path>
+                    </svg>
+                </a>
+                <!--end MetricaEcommerce-->
+                <a href="#MetricaCRM" class="nav-link" data-toggle="tooltip-custom" data-placement="top" title="" data-original-title="Conges">
+                <svg class="nav-svg" version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                            <path class="svg-primary" d="M256 106.6c20.6.1 37.3-16.6 37.3-37.3 0-20.6-16.7-37.3-37.3-37.3-20.6 0-37.3 16.7-37.3 37.3 0 20.6 16.7 37.3 37.3 37.3zM293.4 115h-74.8c-28.2 0-46.6 24.8-46.6 48.4V277c0 22 31 22 31 0V172h6v285.6c0 30.4 42 29.4 43 0V293h8v164.7c1.7 31.2 43 28.2 43-.1V172h5v105c0 22 32 22 32 0V163.4c0-23.5-18.5-48.4-46.6-48.4z"></path>
+                        </svg>
+                </a>
+
+            </nav>
+            <!--end nav-->
+        </div>
+        <!--end main-icon-menu-->
+        <div class="main-menu-inner active">
+            <div class="slimScrollDiv active" style="position: relative; overflow: hidden; width: auto; height: 363px;">
+                <div class="menu-body slimscroll in" style="overflow: hidden; width: auto; height: 363px;">
+                    <div id="MetricaProject" class="main-icon-menu-pane">
+                    <div class="title-box active">
+                        <h6 class="menu-title">Employes</h6></div>
+                    <ul class="nav in mm-show">
+                        <li class="nav-item"><a class="nav-link " th:href="@{'/admin/employes'}"><i class="mdi mdi-format-list-bulleted"></i>Liste des Employes</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{'/admin/employes/ajouter'}"><i class="fas fa-plus-square"></i>Ajouter un Employe</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{'/admin/chefs'}"><i class="mdi mdi-format-list-bulleted"></i>Liste des chefs de projet</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{'/admin/chefs/ajouter'}"><i class="fas fa-plus-square"></i>Ajouter un Chef de projet</a></li>
+                        </li>
+                    </ul>
+                </div>
+                <!-- end  Project-->
+                <div id="MetricaEcommerce" class="main-icon-menu-pane">
+                <div class="title-box">
+                    <h6 class="menu-title">Projets</h6></div>
+                <ul class="nav">
+                    <li class="nav-item"><a th:href="@{'/admin/projets'}" class="nav-link"><i class="mdi mdi-format-list-bulleted"></i>Liste des projets</a></li>
+                    <li class="nav-item"><a th:href="@{'/admin/projets/ajouter'}" class="nav-link" href="#"><i class="fas fa-plus-square"></i>Ajouter un projet</a></li>
+                </ul>
+            </div>
+            <!-- end Ecommerce -->
+            <div id="MetricaCRM" class="main-icon-menu-pane ">
+            <div class="title-box">
+                <h6 class="menu-title">Conges</h6></div>
+            <ul class="nav">
+                <li class="nav-item"><a class="nav-link" th:href="@{'/admin/conges/0'}"><i class="mdi mdi-format-list-bulleted"></i>Liste des congés</a></li>
+            </ul>
+        </div>
+        <!-- end CRM -->
+        <div id="MetricaOthers" class="main-icon-menu-pane">
+        <div class="title-box">
+            <h6 class="menu-title">Utilisateurs</h6></div>
+        <ul class="nav">
+            <li class="nav-item"><a class="nav-link "><i class="mdi mdi-format-list-bulleted"></i>Liste des utilisateurs</a></li>
+            <li class="nav-item"><a class="nav-link" href="#s"><i class="fas fa-plus-square"></i>Ajouter un utilisateur</a></li>
+        </ul>
+        <!--end nav-->
+    </div>
+    <!-- end Others -->
+    <div id="MetricaPages" class="main-icon-menu-pane ">
+    <div class="title-box">
+        <h6 class="menu-title">Categories</h6></div>
+    <ul class="nav">
+        <li class="nav-item"><a class="nav-link"><i class="mdi mdi-format-list-bulleted"></i>Liste des categories</a></li>
+    </ul>
+</div>
+<!-- end Pages -->
+</div>
+<div class="slimScrollBar" style="background: rgb(158, 165, 171); width: 7px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 869px;"></div>
+<div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div>
+</div>
+<!--end menu-body-->
+</div>
+<!-- end main-menu-inner-->
+</div>
+<!-- end left-sidenav-->
+<!-- Page Content-->
+<div class="page-content">
+    <div class="container-fluid">
+        <section layout:fragment="content">
+
+        </section>
+    </div>
+</div>
+<!-- end page content -->
+</div>
+<!-- end page-wrapper -->
+<!-- jQuery  -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/metisMenu.min.js}"></script>
+<script th:src="@{/js/waves.min.js}"></script>
+<script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+<script th:src="@{/plugins/morris/morris.min.js}"></script>
+<script th:src="@{/plugins/raphael/raphael.min.js}"></script>
+<script th:src="@{/plugins/moment/moment.js}"></script>
+<script th:src="@{/plugins/apexcharts/apexcharts.min.js}"></script>
+<i title="Raphaël Colour Picker" style="display: none; color: transparent;"></i>
+
+
+<!-- App js -->
+<script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

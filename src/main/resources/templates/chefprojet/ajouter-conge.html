@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{chefprojet/layout}">
+<head>
+    <title>Ajouter une demande de conge</title>
+    <style>
+        .form-check-inline{
+            transform: scale(1.5);
+            margin: 0 50px;
+        }
+        .needs-validation{
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mt-0 header-title">Nouvelle demande de congé</h4>
+                    <p class="text-muted mb-3">Les champs avec le signe <code class="highlighter-rouge">*</code> sont obligatoires.</p>
+
+
+
+                    <form method="POST" th:action="@{'/employes/conges/ajouter'}" th:object="${conge}" id="form"  class="row needs-validation" novalidate>
+                        <div class="alert alert-danger col-md-8"  th:if="${#fields.hasErrors('*')}">
+                            <strong>Whoops!</strong> Verifier vos informations
+                            <ul>
+                                <li  th:each="err : ${#fields.errors('*')}" th:text="${err}" >...</li>
+                            </ul>
+                        </div>
+
+                        <div class="row">
+                            <div id="alert-msg" class="col-md-12 alert alert-danger" role="alert" style="display: none">
+                                Une erreur est produite
+                            </div>
+                            <div class="form-group row col-md-12">
+                                <label class="col-sm-2 col-form-label text-right">Date debut</label>
+                                <div class="col-sm-10">
+                                    <input name="date" id="debut" th:field="*{date_debut}"  class="form-control"  type="date" >
+                                </div>
+                            </div>
+                            <div class="form-group row col-md-12">
+                                <label class="col-sm-2 col-form-label text-right">Date fin</label>
+                                <div class="col-sm-10">
+                                    <input name="date" id="fin" th:field="*{date_fin}"  class="form-control"  type="date" >
+                                </div>
+                            </div>
+                            <div class="form-group row col-md-12" >
+                                <label for="select" class="col-sm-2 col-form-label text-right">Type </label>
+                                <div class="col-sm-10">
+                                    <select th:field="*{type}"  class="form-control" id="select" required>
+                                        <option th:each="item : ${conge.liste}" th:attr="data-reste='\'' + ${item.value.getRest() } + '\''"
+                                                th:value="${item.key}"
+                                                th:text="${item.value.getName() + '(' + item.value.getRest() + ' jours)' }"/>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <button class="btn btn-primary" style="float : right" type="submit">Ajouter</button>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!--end card-body-->
+            </div>
+            <!--end card-->
+        </div>
+        <!--end col-->
+    </div>
+</div>
+
+<script th:src="@{'/pages/jquery.form-upload.init.js'}"></script>
+<script th:src="@{'/plugins/dropify/js/dropify.min.js'}"></script>
+<script th:src="@{'/plugins/parsleyjs/parsley.min.js'}"></script>
+<script th:src="@{'/pages/jquery.validation.init.js'}"></script>
+<script th:src="@{'/js/jquery.core.js'}"></script>
+
+<th:block layout:fragment="script">
+
+    <script>
+        $("#form").submit(function(event){
+            var debut = $('#debut').val();
+            var fin = $('#fin').val();
+            var diffTime = new Date(fin) - new Date(debut);
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            var rest = $("#select").find(':selected').attr('data-reste');
+            if(diffDays<=0){
+
+
+                $('#alert-msg').css({display : 'block'});
+                return false;
+            }else if((diffDays<=rest)){
+                return true;
+            }else{
+                consoel.log( "diff" +  diffDays);
+                console.log( "rest"+ rest);
+                $('#alert-msg').css({display : 'block'});
+                return false
+            }
+        });
+
+    </script>
+
+</th:block>
+
+
+
+
+</body>
+
+</html>
